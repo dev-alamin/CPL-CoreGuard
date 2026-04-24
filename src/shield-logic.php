@@ -1,9 +1,12 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * CPL CoreGuard — MU-Plugin Logic.
  *
  * This file is intentionally self-contained and dependency-free.
- * It must work even when WordPress core has not fully loaded.
+ * It must work even when WordPress core has not fully loaded
+ * (e.g. when called from db-error.php or via the wp-config.php
+ * shutdown handler, before ABSPATH is defined).
  *
  * Deployed to: wp-content/mu-plugins/cpl-coreguard-logic.php
  * Config at:   wp-content/mu-plugins/cpl-coreguard-config.php
@@ -11,7 +14,14 @@
  * @package CplCoreGuard
  */
 
-// Hard guard — no ABSPATH, no WordPress yet.
+// Prevent direct HTTP access. CLI / db-error / shutdown contexts
+// won't have a web server REQUEST_METHOD, so this is safe.
+if ( isset( $_SERVER['REQUEST_METHOD'] ) && ! defined( 'ABSPATH' ) && ! defined( 'CPL_COREGUARD_LOGIC_LOADED' ) ) {
+	header( 'HTTP/1.1 403 Forbidden' );
+	exit;
+}
+
+// Hard guard against double-loading.
 if ( defined( 'CPL_COREGUARD_LOGIC_LOADED' ) ) {
 	return;
 }
@@ -114,11 +124,11 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	 */
 	function cpl_render_ui(): void {
 		// Resolve config with safe fallbacks.
-		$site_name = defined( 'CPL_SITE_NAME' )   ? CPL_SITE_NAME   : 'Our Services';
-		$color     = defined( 'CPL_BRAND_COLOR' )  ? CPL_BRAND_COLOR : '#7d3af8';
-		$message   = defined( 'CPL_MAINT_MSG' )    ? CPL_MAINT_MSG   : 'Brief technical update in progress.';
-		$lang      = defined( 'CPL_LOCALE' )        ? CPL_LOCALE      : 'en';
-		$site_icon = defined( 'CPL_SITE_ICON' ) ? CPL_SITE_ICON : '';
+		$site_name = defined( 'CPL_SITE_NAME' )     ? CPL_SITE_NAME     : 'Our Services';
+		$color     = defined( 'CPL_BRAND_COLOR' )   ? CPL_BRAND_COLOR   : '#38bdf8';
+		$message   = defined( 'CPL_MAINT_MSG' )     ? CPL_MAINT_MSG     : 'Brief technical update in progress.';
+		$lang      = defined( 'CPL_LOCALE' )        ? CPL_LOCALE        : 'en';
+		$icon_url  = defined( 'CPL_SITE_ICON_URL' ) ? CPL_SITE_ICON_URL : '';
 
 		// Strip locale region for <html lang> (e.g. "en_US" → "en").
 		$html_lang = strtolower( str_replace( '_', '-', substr( $lang, 0, 5 ) ) );
@@ -127,12 +137,17 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 		$esc_name    = htmlspecialchars( $site_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
 		$esc_msg     = htmlspecialchars( $message,   ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
 		$esc_lang    = htmlspecialchars( $html_lang, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
-		$esc_icon_url = htmlspecialchars( $site_icon, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+
+		// Validate icon URL — must be http/https or empty.
+		$esc_icon = '';
+		if ( '' !== $icon_url && preg_match( '/^https?:\/\//i', $icon_url ) ) {
+			$esc_icon = htmlspecialchars( $icon_url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+		}
 
 		// Color is already validated as #RRGGBB by the plugin sanitizer.
 		// We re-validate here defensively before embedding in CSS.
 		if ( ! preg_match( '/^#[0-9a-fA-F]{6}$/', $color ) ) {
-			$color = '#8d00ce';
+			$color = '#38bdf8';
 		}
 
 		// Derive a slightly darker shade for the gradient (simple hex math).
@@ -154,8 +169,10 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="noindex, nofollow">
-	<link rel="icon" type="image/x-icon" href="<?php echo $esc_icon_url; ?>">
 	<title><?php echo $esc_name; ?> &mdash; Maintenance</title>
+	<?php if ( '' !== $esc_icon ) : ?>
+	<link rel="icon" type="image/png" href="<?php echo $esc_icon; ?>">
+	<?php endif; ?>
 	<style>
 		/* ── Reset ────────────────────────────────── */
 		*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,7 +198,7 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 		}
 
 		body {
-			font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -380,10 +397,14 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	</div>
 
 	<div class="zs-icon-wrap" aria-hidden="true">
+		<?php if ( '' !== $esc_icon ) : ?>
+		<img src="<?php echo $esc_icon; ?>" alt="" width="40" height="40" style="border-radius:.5rem;object-fit:contain;">
+		<?php else : ?>
 		<svg width="34" height="34" viewBox="0 0 24 24" fill="none"
 			stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
 		</svg>
+		<?php endif; ?>
 	</div>
 
 	<h1 id="zs-heading" class="zs-heading">Systems stabilizing</h1>

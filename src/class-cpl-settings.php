@@ -76,9 +76,18 @@ final class CPL_CoreGuard_Settings {
 				'default'           => '',
 			]
 		);
+		register_setting(
+			'cpl_coreguard_group',
+			'cpl_site_icon_url',
+			[
+				'type'              => 'string',
+				'sanitize_callback' => 'esc_url_raw',
+				'default'           => '',
+			]
+		);
 
 		// Sync the static config file whenever any option changes.
-		foreach ( [ 'cpl_site_name', 'cpl_brand_color', 'cpl_maint_msg' ] as $opt ) {
+		foreach ( [ 'cpl_site_name', 'cpl_brand_color', 'cpl_maint_msg', 'cpl_site_icon_url' ] as $opt ) {
 			add_action( "update_option_{$opt}", [ $this, 'sync_config' ] );
 			add_action( "add_option_{$opt}",    [ $this, 'sync_config' ] );
 		}
@@ -108,6 +117,14 @@ final class CPL_CoreGuard_Settings {
 		);
 
 		add_settings_field(
+			'cpl_site_icon_url',
+			__( 'Site Icon URL', 'cpl-coreguard' ),
+			[ $this, 'field_site_icon' ],
+			'cpl-coreguard',
+			'cpl_main_section'
+		);
+
+		add_settings_field(
 			'cpl_maint_msg',
 			__( 'Maintenance Message', 'cpl-coreguard' ),
 			[ $this, 'field_maint_msg' ],
@@ -132,7 +149,7 @@ final class CPL_CoreGuard_Settings {
 			border: 1px solid rgba(0,0,0,.15); transition: background .2s;
 		}
 		';
-		wp_register_style( 'cpl-admin', false, [], CPL_COREGUARD_VERSION ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+		wp_register_style( 'cpl-admin', false, [], CPL_COREGUARD_VERSION );
 		wp_enqueue_style( 'cpl-admin' );
 		wp_add_inline_style( 'cpl-admin', $css );
 
@@ -157,22 +174,41 @@ final class CPL_CoreGuard_Settings {
 	// -------------------------------------------------------------------------
 
 	public function field_site_name(): void {
-		$value = esc_attr( get_option( 'cpl_site_name', get_bloginfo( 'name' ) ) );
-		echo '<input type="text" id="cpl_site_name" name="cpl_site_name" class="regular-text" value="' . $value . '" />';
+		printf(
+			'<input type="text" id="cpl_site_name" name="cpl_site_name" class="regular-text" value="%s" />',
+			esc_attr( get_option( 'cpl_site_name', get_bloginfo( 'name' ) ) )
+		);
 		echo '<p class="description">' . esc_html__( 'Displayed on the maintenance screen. Defaults to your site title.', 'cpl-coreguard' ) . '</p>';
 	}
 
 	public function field_brand_color(): void {
-		$value = esc_attr( get_option( 'cpl_brand_color', '#38bdf8' ) );
-		echo '<input type="color" id="cpl_brand_color" name="cpl_brand_color" value="' . $value . '" />';
-		echo '<span id="cpl_color_preview" class="cpl-color-preview" style="background:' . $value . ';" aria-hidden="true"></span>';
+		$color = esc_attr( get_option( 'cpl_brand_color', '#38bdf8' ) );
+		printf(
+			'<input type="color" id="cpl_brand_color" name="cpl_brand_color" value="%s" />',
+			$color // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+		printf(
+			'<span id="cpl_color_preview" class="cpl-color-preview" style="background:%s;" aria-hidden="true"></span>',
+			$color // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
 		echo '<p class="description">' . esc_html__( 'Accent color used in the recovery UI.', 'cpl-coreguard' ) . '</p>';
 	}
 
+	public function field_site_icon(): void {
+		$url = esc_url( get_option( 'cpl_site_icon_url', '' ) );
+		printf(
+			'<input type="url" id="cpl_site_icon_url" name="cpl_site_icon_url" class="regular-text" value="%s" placeholder="https://example.com/icon.png" />',
+			$url // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		);
+		echo '<p class="description">' . esc_html__( 'Full URL to a PNG/SVG icon (recommended: 512×512 px). Shown on the recovery screen. Leave blank to use the shield icon.', 'cpl-coreguard' ) . '</p>';
+	}
+
 	public function field_maint_msg(): void {
-		$value = esc_textarea( get_option( 'cpl_maint_msg', __( 'Brief technical update in progress.', 'cpl-coreguard' ) ) );
-		echo '<textarea id="cpl_maint_msg" name="cpl_maint_msg" class="large-text" rows="3">' . $value . '</textarea>';
-		echo '<p class="description">' . esc_html__( 'Short message shown beneath the heading on the error screen.', 'cpl-coreguard' ) . '</p>';
+		printf(
+			'<textarea id="cpl_maint_msg" name="cpl_maint_msg" class="large-text" rows="3">%s</textarea>',
+			esc_textarea( get_option( 'cpl_maint_msg', __( 'Brief technical update in progress.', 'cpl-coreguard' ) ) )
+		);
+		echo '<p class="description">' . esc_html__( 'Short message shown beneath the heading on the recovery screen.', 'cpl-coreguard' ) . '</p>';
 	}
 
 	// -------------------------------------------------------------------------
