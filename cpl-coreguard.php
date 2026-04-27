@@ -67,6 +67,8 @@ final class CPL_CoreGuard {
 		if ( is_admin() ) {
 			require_once CPL_COREGUARD_DIR . 'src/class-cpl-settings.php';
 			CPL_CoreGuard_Settings::instance();
+
+			add_action('admin_init', [$this, 'handle_preview_request']);
 		}
 	}
 
@@ -358,6 +360,49 @@ final class CPL_CoreGuard {
 			return '#' . $m[1] . $m[1] . $m[2] . $m[2] . $m[3] . $m[3];
 		}
 		return '#38bdf8';
+	}
+
+	public function handle_preview_request() {
+		
+		// 1. Basic checks
+		if ( ! isset( $_GET['cpl_preview'] ) || '1' !== $_GET['cpl_preview'] ) {
+			return;
+		}
+
+		// 2. Permission check
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Unauthorized.', 'cpl-coreguard' ) );
+		}
+
+		// 3. Security Nonce check
+		if (
+			! isset( $_GET['_wpnonce'] ) ||
+			! wp_verify_nonce(
+				sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ),
+				'cpl_preview_action'
+			)
+		) {
+			wp_die( esc_html__( 'Security check failed. Please refresh the settings page.', 'cpl-coreguard' ) );
+		}
+
+		// 4. Force a clean buffer
+		if ( ob_get_level() ) {
+			ob_end_clean();
+		}
+
+		
+		// 5. Load the Logic and RENDER
+		$mu_path = WPMU_PLUGIN_DIR . '/' . CPL_COREGUARD_MU_FILE;
+		
+		if ( file_exists( $mu_path ) ) {
+			require_once $mu_path;
+			if ( function_exists( 'cpl_render_ui' ) ) {
+				cpl_render_ui( true ); 
+				exit;
+				}
+		} else {
+			wp_die( esc_html__( 'CoreGuard Logic file not found. Please deactivate and reactivate the plugin.', 'cpl-coreguard' ) );
+		}
 	}
 
 }

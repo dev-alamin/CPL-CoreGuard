@@ -216,6 +216,12 @@ final class CPL_CoreGuard_Settings {
 	// -------------------------------------------------------------------------
 
 	public function render_page(): void {
+		// Generate the secure preview URL
+		$preview_url = wp_nonce_url(
+			admin_url('options-general.php?page=cpl-coreguard&cpl_preview=1'),
+			'cpl_preview_action'
+		);
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'cpl-coreguard' ) );
 		}
@@ -238,6 +244,11 @@ final class CPL_CoreGuard_Settings {
 				submit_button( __( 'Save &amp; Sync Configuration', 'cpl-coreguard' ) );
 				?>
 			</form>
+			<a href="<?php echo esc_url($preview_url); ?>" 
+			target="_blank" 
+			class="button button-secondary">
+				<?php esc_html_e( 'Live Preview Template', 'cpl-coreguard' ); ?>
+			</a>
 		</div>
 		<?php
 	}

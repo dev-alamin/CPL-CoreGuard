@@ -121,8 +121,10 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	/**
 	 * Outputs a full, standalone HTML maintenance/error page and exits.
 	 * Zero WordPress dependencies — works when WP core is completely broken.
+	 * 
+	 * @param bool $is_preview Whether this is a manual preview or a real error.
 	 */
-	function cpl_render_ui(): void {
+	function cpl_render_ui( $is_preview = false ): void {
 		// Resolve config with safe fallbacks.
 		$site_name = defined( 'CPL_SITE_NAME' )     ? CPL_SITE_NAME     : 'Our Services';
 		$color     = defined( 'CPL_BRAND_COLOR' )   ? CPL_BRAND_COLOR   : '#38bdf8';
@@ -159,7 +161,9 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 			max( 0, (int) $b - 40 )
 		);
 
-		cpl_send_headers( 503 );
+		if( ! $is_preview && !headers_sent() ) {
+			cpl_send_headers( 503 );
+		}
 
 		// phpcs:disable
 		?>
@@ -390,7 +394,11 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 <body>
 
 <main class="zs-card" role="main" aria-labelledby="zs-heading">
-
+	<?php
+	if ($is_preview) {
+        echo '<div style="position:fixed; top:10px; right:10px; background:#ef4444; color:white; padding:5px 15px; border-radius:20px; font-size:12px; z-index:9999;">Preview Mode</div>';
+    }
+	?>
 	<div class="zs-badge" aria-label="Status: Maintenance in progress">
 		<span class="zs-badge-dot" aria-hidden="true"></span>
 		<?php echo $esc_name; ?>
