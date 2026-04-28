@@ -1,0 +1,28 @@
+{
+    "name": "amin/cpl-coreguard",
+    "type": "wordpress-plugin",
+    "license": "GPLv2",
+    "autoload": {
+        "psr-4": {
+            "Amin\\CplCoreguard\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Al Amin",
+            "email": "hmalaminmb4@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "squizlabs/php_codesniffer": "3.x-dev",
+        "wp-coding-standards/wpcs": "dev-develop",
+        "phpcsstandards/phpcsutils": "^1.0@dev",
+        "phpcsstandards/phpcsextra": "^1.0@dev"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

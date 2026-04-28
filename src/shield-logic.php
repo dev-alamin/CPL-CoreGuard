@@ -1,5 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * CPL CoreGuard — MU-Plugin Logic.
  *
@@ -38,8 +40,8 @@ unset( $_cpl_cfg );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. Register the shutdown handler for PHP fatal errors.
-//    Runs only when invoked from wp-config.php (i.e. very early in the
-//    request lifecycle, before normal MU-plugin loading).
+// Runs only when invoked from wp-config.php (i.e. very early in the
+// request lifecycle, before normal MU-plugin loading).
 // ─────────────────────────────────────────────────────────────────────────────
 if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
 
@@ -49,36 +51,38 @@ if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
 			ob_start();
 		}
 
-		register_shutdown_function( static function (): void {
-			$error = error_get_last();
+		register_shutdown_function(
+			static function (): void {
+				$error = error_get_last();
 
-			// Only intercept true fatals — ignore notices, warnings, etc.
-			$fatal_types = [ E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR ];
+				// Only intercept true fatals — ignore notices, warnings, etc.
+				$fatal_types = array( E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR );
 
-			if ( ! $error || ! in_array( $error['type'], $fatal_types, true ) ) {
-				return;
+				if ( ! $error || ! in_array( $error['type'], $fatal_types, true ) ) {
+					return;
+				}
+
+				// Clear any output already sent (notices, partial markup, etc.).
+				while ( ob_get_level() > 0 ) {
+					ob_end_clean();
+				}
+
+				// WP debug log integration — write the error before we override output.
+				if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+					$log = sprintf(
+						'[CPL CoreGuard] Fatal intercepted — %s in %s on line %d',
+						$error['message'],
+						$error['file'],
+						$error['line']
+					);
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( $log );
+				}
+
+				cpl_send_headers( 503 );
+				cpl_render_ui();
 			}
-
-			// Clear any output already sent (notices, partial markup, etc.).
-			while ( ob_get_level() > 0 ) {
-				ob_end_clean();
-			}
-
-			// WP debug log integration — write the error before we override output.
-			if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-				$log = sprintf(
-					'[CPL CoreGuard] Fatal intercepted — %s in %s on line %d',
-					$error['message'],
-					$error['file'],
-					$error['line']
-				);
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( $log );
-			}
-
-			cpl_send_headers( 503 );
-			cpl_render_ui();
-		} );
+		);
 	}
 
 	cpl_register_fatal_handler();
@@ -99,11 +103,11 @@ if ( ! function_exists( 'cpl_send_headers' ) ) {
 			return;
 		}
 
-		$messages = [
+		$messages = array(
 			500 => 'Internal Server Error',
 			503 => 'Service Temporarily Unavailable',
-		];
-		$text = $messages[ $status ] ?? 'Service Temporarily Unavailable';
+		);
+		$text     = $messages[ $status ] ?? 'Service Temporarily Unavailable';
 
 		header( "HTTP/1.1 {$status} {$text}", true, $status );
 		header( 'Content-Type: text/html; charset=UTF-8' );
@@ -121,24 +125,24 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	/**
 	 * Outputs a full, standalone HTML maintenance/error page and exits.
 	 * Zero WordPress dependencies — works when WP core is completely broken.
-	 * 
+	 *
 	 * @param bool $is_preview Whether this is a manual preview or a real error.
 	 */
 	function cpl_render_ui( $is_preview = false ): void {
 		// Resolve config with safe fallbacks.
-		$site_name = defined( 'CPL_SITE_NAME' )     ? CPL_SITE_NAME     : 'Our Services';
-		$color     = defined( 'CPL_BRAND_COLOR' )   ? CPL_BRAND_COLOR   : '#38bdf8';
-		$message   = defined( 'CPL_MAINT_MSG' )     ? CPL_MAINT_MSG     : 'Brief technical update in progress.';
-		$lang      = defined( 'CPL_LOCALE' )        ? CPL_LOCALE        : 'en';
+		$site_name = defined( 'CPL_SITE_NAME' ) ? CPL_SITE_NAME : 'Our Services';
+		$color     = defined( 'CPL_BRAND_COLOR' ) ? CPL_BRAND_COLOR : '#38bdf8';
+		$message   = defined( 'CPL_MAINT_MSG' ) ? CPL_MAINT_MSG : 'Brief technical update in progress.';
+		$lang      = defined( 'CPL_LOCALE' ) ? CPL_LOCALE : 'en';
 		$icon_url  = defined( 'CPL_SITE_ICON_URL' ) ? CPL_SITE_ICON_URL : '';
 
 		// Strip locale region for <html lang> (e.g. "en_US" → "en").
 		$html_lang = strtolower( str_replace( '_', '-', substr( $lang, 0, 5 ) ) );
 
 		// Escape all dynamic values — we have no WP functions, so use native PHP.
-		$esc_name    = htmlspecialchars( $site_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
-		$esc_msg     = htmlspecialchars( $message,   ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
-		$esc_lang    = htmlspecialchars( $html_lang, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+		$esc_name = htmlspecialchars( $site_name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+		$esc_msg  = htmlspecialchars( $message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+		$esc_lang = htmlspecialchars( $html_lang, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
 
 		// Validate icon URL — must be http/https or empty.
 		$esc_icon = '';
@@ -154,14 +158,14 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 
 		// Derive a slightly darker shade for the gradient (simple hex math).
 		list( $r, $g, $b ) = sscanf( $color, '#%02x%02x%02x' );
-		$dark_color = sprintf(
+		$dark_color        = sprintf(
 			'#%02x%02x%02x',
 			max( 0, (int) $r - 40 ),
 			max( 0, (int) $g - 40 ),
 			max( 0, (int) $b - 40 )
 		);
 
-		if( ! $is_preview && !headers_sent() ) {
+		if ( ! $is_preview && ! headers_sent() ) {
 			cpl_send_headers( 503 );
 		}
 
@@ -396,7 +400,7 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 <main class="zs-card" role="main" aria-labelledby="zs-heading">
 	<?php
 	if ($is_preview) {
-        echo '<div style="position:fixed; top:10px; right:10px; background:#ef4444; color:white; padding:5px 15px; border-radius:20px; font-size:12px; z-index:9999;">Preview Mode</div>';
+			echo '<div style="position:fixed; top:10px; right:10px; background:#ef4444; color:white; padding:5px 15px; border-radius:20px; font-size:12px; z-index:9999;">Preview Mode</div>';
     }
 	?>
 	<div class="zs-badge" aria-label="Status: Maintenance in progress">

@@ -26,9 +26,9 @@ final class CPL_CoreGuard_Settings {
 	}
 
 	private function __construct() {
-		add_action( 'admin_menu',         [ $this, 'add_menu' ] );
-		add_action( 'admin_init',         [ $this, 'register_settings' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
 	// -------------------------------------------------------------------------
@@ -42,7 +42,7 @@ final class CPL_CoreGuard_Settings {
 			__( 'CPL CoreGuard', 'cpl-coreguard' ),
 			'manage_options',
 			'cpl-coreguard',
-			[ $this, 'render_page' ]
+			array( $this, 'render_page' )
 		);
 	}
 
@@ -52,44 +52,44 @@ final class CPL_CoreGuard_Settings {
 		register_setting(
 			'cpl_coreguard_group',
 			'cpl_site_name',
-			[
+			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
 				'default'           => '',
-			]
+			)
 		);
 		register_setting(
 			'cpl_coreguard_group',
 			'cpl_brand_color',
-			[
+			array(
 				'type'              => 'string',
-				'sanitize_callback' => [ $this, 'sanitize_hex_color' ],
+				'sanitize_callback' => array( $this, 'sanitize_hex_color' ),
 				'default'           => '#38bdf8',
-			]
+			)
 		);
 		register_setting(
 			'cpl_coreguard_group',
 			'cpl_maint_msg',
-			[
+			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_textarea_field',
 				'default'           => '',
-			]
+			)
 		);
 		register_setting(
 			'cpl_coreguard_group',
 			'cpl_site_icon_url',
-			[
+			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'esc_url_raw',
 				'default'           => '',
-			]
+			)
 		);
 
 		// Sync the static config file whenever any option changes.
-		foreach ( [ 'cpl_site_name', 'cpl_brand_color', 'cpl_maint_msg', 'cpl_site_icon_url' ] as $opt ) {
-			add_action( "update_option_{$opt}", [ $this, 'sync_config' ] );
-			add_action( "add_option_{$opt}",    [ $this, 'sync_config' ] );
+		foreach ( array( 'cpl_site_name', 'cpl_brand_color', 'cpl_maint_msg', 'cpl_site_icon_url' ) as $opt ) {
+			add_action( "update_option_{$opt}", array( $this, 'sync_config' ) );
+			add_action( "add_option_{$opt}", array( $this, 'sync_config' ) );
 		}
 
 		// Section + fields.
@@ -103,7 +103,7 @@ final class CPL_CoreGuard_Settings {
 		add_settings_field(
 			'cpl_site_name',
 			__( 'Site / Brand Name', 'cpl-coreguard' ),
-			[ $this, 'field_site_name' ],
+			array( $this, 'field_site_name' ),
 			'cpl-coreguard',
 			'cpl_main_section'
 		);
@@ -111,7 +111,7 @@ final class CPL_CoreGuard_Settings {
 		add_settings_field(
 			'cpl_brand_color',
 			__( 'Brand Color', 'cpl-coreguard' ),
-			[ $this, 'field_brand_color' ],
+			array( $this, 'field_brand_color' ),
 			'cpl-coreguard',
 			'cpl_main_section'
 		);
@@ -119,7 +119,7 @@ final class CPL_CoreGuard_Settings {
 		add_settings_field(
 			'cpl_site_icon_url',
 			__( 'Site Icon URL', 'cpl-coreguard' ),
-			[ $this, 'field_site_icon' ],
+			array( $this, 'field_site_icon' ),
 			'cpl-coreguard',
 			'cpl_main_section'
 		);
@@ -127,7 +127,7 @@ final class CPL_CoreGuard_Settings {
 		add_settings_field(
 			'cpl_maint_msg',
 			__( 'Maintenance Message', 'cpl-coreguard' ),
-			[ $this, 'field_maint_msg' ],
+			array( $this, 'field_maint_msg' ),
 			'cpl-coreguard',
 			'cpl_main_section'
 		);
@@ -149,7 +149,7 @@ final class CPL_CoreGuard_Settings {
 			border: 1px solid rgba(0,0,0,.15); transition: background .2s;
 		}
 		';
-		wp_register_style( 'cpl-admin', false, [], CPL_COREGUARD_VERSION );
+		wp_register_style( 'cpl-admin', false, array(), CPL_COREGUARD_VERSION );
 		wp_enqueue_style( 'cpl-admin' );
 		wp_add_inline_style( 'cpl-admin', $css );
 
@@ -218,7 +218,7 @@ final class CPL_CoreGuard_Settings {
 	public function render_page(): void {
 		// Generate the secure preview URL
 		$preview_url = wp_nonce_url(
-			admin_url('options-general.php?page=cpl-coreguard&cpl_preview=1'),
+			admin_url( 'options-general.php?page=cpl-coreguard&cpl_preview=1' ),
 			'cpl_preview_action'
 		);
 
@@ -244,7 +244,7 @@ final class CPL_CoreGuard_Settings {
 				submit_button( __( 'Save &amp; Sync Configuration', 'cpl-coreguard' ) );
 				?>
 			</form>
-			<a href="<?php echo esc_url($preview_url); ?>" 
+			<a href="<?php echo esc_url( $preview_url ); ?>" 
 			target="_blank" 
 			class="button button-secondary">
 				<?php esc_html_e( 'Live Preview Template', 'cpl-coreguard' ); ?>

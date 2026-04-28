@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="CPL CoreGuard">
+
+	<description>WordPress Coding Standards</description>
+
+	<file>.</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<!-- Core WordPress rules -->
+	<rule ref="WordPress"/>
+
+	<!-- Extra stricter rules -->
+	<rule ref="WordPress-Extra"/>
+
+	<!-- Optional: docs if you want -->
+	<!-- <rule ref="WordPress-Docs"/> -->
+
+	<config name="testVersion" value="7.4-"/>
+
+</ruleset>
