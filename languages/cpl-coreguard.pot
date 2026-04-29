@@ -1,0 +1,102 @@
+# Copyright (C) 2026 Al Amin
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: CPL CoreGuard 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/cpl-coreguard\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-29T09:25:54+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: cpl-coreguard\n"
+
+#. Plugin Name of the plugin
+#: cpl-coreguard.php
+#: src/Admin/Settings.php:43
+#: src/Admin/Settings.php:44
+#: src/Admin/Settings.php:235
+msgid "CPL CoreGuard"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: cpl-coreguard.php
+msgid "https://github.com/alamin/cpl-coreguard"
+msgstr ""
+
+#. Description of the plugin
+#: cpl-coreguard.php
+msgid "Enterprise-grade instant recovery UI for WordPress fatal errors and database failures. Deploys a glassmorphism maintenance screen via MU-plugin and db-error drop-in."
+msgstr ""
+
+#. Author of the plugin
+#: cpl-coreguard.php
+msgid "Al Amin"
+msgstr ""
+
+#: cpl-coreguard.php:150
+msgid "Unauthorized."
+msgstr ""
+
+#: cpl-coreguard.php:161
+msgid "Security check failed. Please refresh the settings page."
+msgstr ""
+
+#: cpl-coreguard.php:179
+msgid "CoreGuard Logic file not found. Please deactivate and reactivate the plugin."
+msgstr ""
+
+#: src/Admin/Settings.php:107
+msgid "Site / Brand Name"
+msgstr ""
+
+#: src/Admin/Settings.php:115
+msgid "Brand Color"
+msgstr ""
+
+#: src/Admin/Settings.php:123
+msgid "Site Icon URL"
+msgstr ""
+
+#: src/Admin/Settings.php:131
+msgid "Maintenance Message"
+msgstr ""
+
+#: src/Admin/Settings.php:183
+msgid "Displayed on the maintenance screen. Defaults to your site title."
+msgstr ""
+
+#: src/Admin/Settings.php:196
+msgid "Accent color used in the recovery UI."
+msgstr ""
+
+#: src/Admin/Settings.php:205
+msgid "Full URL to a PNG/SVG icon (recommended: 512×512 px). Shown on the recovery screen. Leave blank to use the shield icon."
+msgstr ""
+
+#: src/Admin/Settings.php:211
+msgid "Brief technical update in progress."
+msgstr ""
+
+#: src/Admin/Settings.php:213
+msgid "Short message shown beneath the heading on the recovery screen."
+msgstr ""
+
+#: src/Admin/Settings.php:228
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: src/Admin/Settings.php:238
+msgid "Configure the brand and messaging shown on the recovery screen during fatal errors or database failures."
+msgstr ""
+
+#: src/Admin/Settings.php:246
+msgid "Save &amp; Sync Configuration"
+msgstr ""
+
+#: src/Admin/Settings.php:252
+msgid "Live Preview Template"
+msgstr ""
