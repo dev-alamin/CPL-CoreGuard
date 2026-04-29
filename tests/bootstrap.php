@@ -1,6 +1,11 @@
 <?php
 // Load Composer Autoloader
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+define( 'CPL_PLUGIN_ROOT', dirname( __DIR__ ) );
+require_once CPL_PLUGIN_ROOT . '/vendor/autoload.php';
+
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', CPL_PLUGIN_ROOT . '/temp_abs/' );
+}
 
 // Mock WordPress Constants for Testing
 define('ABSPATH', '/var/www/html/');
