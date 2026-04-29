@@ -7,10 +7,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # We use a specialized tool to handle the "WordPress way" of zipping
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      # STEP A: Create the vendor folder physically on the Robot's drive.
+      # Because this is a fresh install, it ignores your local .gitignore.
+      - name: Install Production Dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      # STEP B: The zip tool now sees the vendor folder and includes it.
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
         with:
