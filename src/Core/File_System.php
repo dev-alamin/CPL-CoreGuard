@@ -11,9 +11,13 @@ class File_System {
 	 * Generic wrapper to write files.
 	 * This is the "Gold Mine" for mocking in PHPUnit.
 	 */
-	public function put_contents( string $path, string $content ): bool {
+	public function put_contents( string $path, string $content, int $flags = LOCK_EX ): bool {
+		if ( strpos( $path, 'vfs://' ) === 0 ) {
+            $flags &= ~LOCK_EX; 
+        }
+
 		// You can swap this for the WP_Filesystem API later if permissions are an issue.
-		return false !== file_put_contents( $path, $content, LOCK_EX );
+		return false !== file_put_contents( $path, $content, $flags );
 	}
 
 	/**

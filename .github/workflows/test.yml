@@ -1,0 +1,21 @@
+name: Run Tests
+on: [push, pull_request]
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4' # Matches your plugin requirements
+          extensions: mbstring, xml, ctype, iconv
+
+      - name: Install Dependencies
+        run: composer install --no-progress
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
