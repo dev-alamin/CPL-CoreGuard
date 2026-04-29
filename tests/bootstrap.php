@@ -8,7 +8,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Mock WordPress Constants for Testing
-define( 'ABSPATH', '/var/www/html/' );
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', realpath( __DIR__ . '/..' ) . '/' );
+}
 define( 'WPMU_PLUGIN_DIR', '/var/www/html/wp-content/mu-plugins' );
 define( 'WP_CONTENT_DIR', '/var/www/html/wp-content' );
 define( 'CPL_COREGUARD_VERSION', '1.0.0' );
