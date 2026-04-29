@@ -4,7 +4,7 @@ define( 'CPL_PLUGIN_ROOT', dirname( __DIR__ ) );
 require_once CPL_PLUGIN_ROOT . '/vendor/autoload.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', CPL_PLUGIN_ROOT . '/temp_abs/' );
+    define( 'ABSPATH', '/home/runner/work/CPL-CoreGuard/CPL-CoreGuard/' );
 }
 
 // Mock WordPress Constants for Testing
