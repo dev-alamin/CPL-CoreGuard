@@ -1,4 +1,15 @@
-steps:
+name: Generate Plugin ZIP
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -7,25 +18,24 @@ steps:
         with:
           php-version: '7.4'
 
-      # 1. Bake the vendor folder
-      - name: Install Production Dependencies
+      # 1. Physical installation of the production vendor folder
+      - name: Install Dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      # 2. Manual Zip (The "Old School" way is often the most reliable)
-      # We move files to a temporary folder to ensure ONLY what we want is zipped.
-      - name: Prepare and Zip
+      # 2. Bundle everything into a folder first (to control structure)
+      - name: Prepare Bundle
         run: |
-          mkdir -p deploy/cpl-coreguard
-          cp -r src deploy/cpl-coreguard/
-          cp -r vendor deploy/cpl-coreguard/
-          cp -r languages deploy/cpl-coreguard/
-          cp cpl-coreguard.php deploy/cpl-coreguard/
-          cp readme.txt deploy/cpl-coreguard/
-          cd deploy && zip -r ../cpl-coreguard.zip cpl-coreguard/
+          mkdir -p cpl-coreguard
+          cp -r src vendor languages cpl-coreguard.php readme.txt cpl-coreguard/
 
-      # 3. Upload the resulting zip
-      - name: Upload ZIP
-        uses: actions/upload-artifact@v4
+      # 3. Create the actual ZIP
+      - name: Create ZIP
+        run: zip -r cpl-coreguard.zip cpl-coreguard/
+
+      # 4. Create a GitHub Release and attach the ZIP
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: cpl-coreguard-v1.0.2
-          path: cpl-coreguard.zip
+          files: cpl-coreguard.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
