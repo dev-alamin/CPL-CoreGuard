@@ -431,7 +431,9 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "squizlabs/php_codesniffer": 20,
-        "wp-coding-standards/wpcs": 20
+        "wp-coding-standards/wpcs": 20,
+        "phpcsstandards/phpcsutils": 20,
+        "phpcsstandards/phpcsextra": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

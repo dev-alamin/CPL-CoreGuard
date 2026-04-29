@@ -1,31 +1,33 @@
 <?php
+namespace Amin\CPL_CoreGuard\Admin;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * CPL CoreGuard — Admin Settings Page.
  *
  * @package CplCoreGuard
  */
 
-// Abort if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+
+use Amin\CPL_CoreGuard\Core\File_System;
+use Amin\CPL_CoreGuard\Core\Config_Generator;
 
 /**
  * Registers and renders the CPL CoreGuard settings page.
  */
-final class CPL_CoreGuard_Settings {
 
-	/** @var CPL_CoreGuard_Settings|null */
-	private static $instance = null;
+final class Settings {
 
-	public static function instance(): self {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
+	private $fs;
+	private $conf;
 
-	private function __construct() {
+	public function __construct( File_System $fs, Config_Generator $conf ) {
+		$this->fs   = $fs;
+		$this->conf = $conf;
+
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
@@ -261,7 +263,10 @@ final class CPL_CoreGuard_Settings {
 	 * Called whenever a CPL CoreGuard option changes — rewrites the static config.
 	 */
 	public function sync_config(): void {
-		CPL_CoreGuard::instance()->write_config_file();
+		$this->fs->put_contents(
+			trailingslashit( WPMU_PLUGIN_DIR ) . CPL_COREGUARD_CFG_FILE,
+			$this->conf->get_config_file_contents()
+		);
 	}
 
 	/**

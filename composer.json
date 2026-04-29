@@ -4,7 +4,7 @@
     "license": "GPLv2",
     "autoload": {
         "psr-4": {
-            "Amin\\CplCoreguard\\": "src/"
+            "Amin\\CPL_CoreGuard\\": "src/"
         }
     },
     "authors": [
