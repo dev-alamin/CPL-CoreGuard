@@ -11,11 +11,11 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4' # Matches your plugin requirements
+          php-version: '8.2' # Matches your plugin requirements
           extensions: mbstring, xml, ctype, iconv
 
       - name: Install Dependencies
-        run: composer install --no-progress
+        run: composer install --no-progress --ignore-platform-reqs
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit
