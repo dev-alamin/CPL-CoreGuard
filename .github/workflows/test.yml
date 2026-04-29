@@ -19,3 +19,6 @@ jobs:
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit
+
+      # - name: Run PHPCS
+      #   run: vendor/bin/phpcs

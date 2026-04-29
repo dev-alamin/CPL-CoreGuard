@@ -5,6 +5,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Config Generator
+ *
+ * @package CPL_CoreGuard
+ * @since 1.0.0
+ */
+
 use Amin\CPL_CoreGuard\Utils\Utils;
 
 /**
@@ -55,10 +62,12 @@ class Config_Generator {
 
 	/**
 	 * Logic for modifying wp-config content.
+	 *
+	 * @param string $current_content Current content.
 	 */
 	public function get_wp_config_modified_content( string $current_content ): ?string {
 		if ( str_contains( $current_content, self::WP_CONFIG_MARKER ) ) {
-			return null; // No change needed
+			return null; // No change needed.
 		}
 
 		$snippet  = "\n" . self::WP_CONFIG_MARKER . "\n";

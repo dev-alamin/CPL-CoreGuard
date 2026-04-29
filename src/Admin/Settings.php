@@ -16,14 +16,44 @@ use Amin\CPL_CoreGuard\Core\File_System;
 use Amin\CPL_CoreGuard\Core\Config_Generator;
 
 /**
- * Registers and renders the CPL CoreGuard settings page.
+ * Admin Settings Page handler for CPL CoreGuard.
+ *
+ * Responsible for:
+ * - Registering plugin settings via the WordPress Settings API.
+ * - Rendering the admin settings UI.
+ * - Syncing configuration to a static file on option updates.
+ * - Enqueueing minimal admin assets for UX enhancements.
+ *
+ * @package CplCoreGuard
  */
-
 final class Settings {
 
+	/**
+	 * Filesystem handler instance.
+	 *
+	 * Used to write the generated configuration file.
+	 *
+	 * @var File_System
+	 */
 	private $fs;
+
+	/**
+	 * Configuration generator instance.
+	 *
+	 * Produces the static config file contents based on options.
+	 *
+	 * @var Config_Generator
+	 */
 	private $conf;
 
+	/**
+	 * Constructor.
+	 *
+	 * Wires dependencies and registers WordPress hooks.
+	 *
+	 * @param File_System      $fs   Filesystem abstraction instance.
+	 * @param Config_Generator $conf Configuration generator instance.
+	 */
 	public function __construct( File_System $fs, Config_Generator $conf ) {
 		$this->fs   = $fs;
 		$this->conf = $conf;
@@ -37,7 +67,11 @@ final class Settings {
 	// WordPress hooks
 	// -------------------------------------------------------------------------
 
-	/** Register the settings sub-page under Settings. */
+	/**
+	 * Registers the plugin settings page under "Settings".
+	 *
+	 * @return void
+	 */
 	public function add_menu(): void {
 		add_options_page(
 			__( 'CPL CoreGuard', 'cpl-coreguard' ),
@@ -48,7 +82,13 @@ final class Settings {
 		);
 	}
 
-	/** Register settings, sections, and fields via the Settings API. */
+	/**
+	 * Registers plugin settings, sections, and fields using the Settings API.
+	 *
+	 * Also attaches hooks to sync configuration whenever options change.
+	 *
+	 * @return void
+	 */
 	public function register_settings(): void {
 		// Register options with sanitize callbacks.
 		register_setting(
@@ -135,7 +175,12 @@ final class Settings {
 		);
 	}
 
-	/** Enqueue a tiny bit of inline CSS for the settings page only. */
+		/**
+		 * Enqueues inline admin styles and scripts for the settings page.
+		 *
+		 * @param string $hook Current admin page hook suffix.
+		 * @return void
+		 */
 	public function enqueue_assets( string $hook ): void {
 		if ( 'settings_page_cpl-coreguard' !== $hook ) {
 			return;
@@ -175,6 +220,11 @@ final class Settings {
 	// Field renderers
 	// -------------------------------------------------------------------------
 
+		/**
+		 * Renders the Site Name field.
+		 *
+		 * @return void
+		 */
 	public function field_site_name(): void {
 		printf(
 			'<input type="text" id="cpl_site_name" name="cpl_site_name" class="regular-text" value="%s" />',
@@ -183,6 +233,13 @@ final class Settings {
 		echo '<p class="description">' . esc_html__( 'Displayed on the maintenance screen. Defaults to your site title.', 'cpl-coreguard' ) . '</p>';
 	}
 
+			/**
+			 * Renders the Brand Color picker field.
+			 *
+			 * Includes a live preview swatch.
+			 *
+			 * @return void
+			 */
 	public function field_brand_color(): void {
 		$color = esc_attr( get_option( 'cpl_brand_color', '#38bdf8' ) );
 		printf(
@@ -196,6 +253,11 @@ final class Settings {
 		echo '<p class="description">' . esc_html__( 'Accent color used in the recovery UI.', 'cpl-coreguard' ) . '</p>';
 	}
 
+		/**
+		 * Renders the Site Icon URL field.
+		 *
+		 * @return void
+		 */
 	public function field_site_icon(): void {
 		$url = esc_url( get_option( 'cpl_site_icon_url', '' ) );
 		printf(
@@ -205,6 +267,11 @@ final class Settings {
 		echo '<p class="description">' . esc_html__( 'Full URL to a PNG/SVG icon (recommended: 512×512 px). Shown on the recovery screen. Leave blank to use the shield icon.', 'cpl-coreguard' ) . '</p>';
 	}
 
+		/**
+		 * Renders the Maintenance Message textarea field.
+		 *
+		 * @return void
+		 */
 	public function field_maint_msg(): void {
 		printf(
 			'<textarea id="cpl_maint_msg" name="cpl_maint_msg" class="large-text" rows="3">%s</textarea>',
@@ -217,8 +284,18 @@ final class Settings {
 	// Page renderer
 	// -------------------------------------------------------------------------
 
+		/**
+		 * Outputs the settings page HTML.
+		 *
+		 * Handles:
+		 * - Capability checks
+		 * - Settings form rendering
+		 * - Preview URL generation
+		 *
+		 * @return void
+		 */
 	public function render_page(): void {
-		// Generate the secure preview URL
+		// Generate the secure preview URL.
 		$preview_url = wp_nonce_url(
 			admin_url( 'options-general.php?page=cpl-coreguard&cpl_preview=1' ),
 			'cpl_preview_action'
@@ -260,7 +337,11 @@ final class Settings {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Called whenever a CPL CoreGuard option changes — rewrites the static config.
+	 * Synchronizes plugin options into a static configuration file.
+	 *
+	 * Triggered on option create/update hooks.
+	 *
+	 * @return void
 	 */
 	public function sync_config(): void {
 		$this->fs->put_contents(
@@ -272,7 +353,7 @@ final class Settings {
 	/**
 	 * Sanitizes a hex color. Rejects invalid input silently, returning default.
 	 *
-	 * @param  mixed $raw
+	 * @param  mixed $raw raw color code.
 	 * @return string
 	 */
 	public function sanitize_hex_color( $raw ): string {

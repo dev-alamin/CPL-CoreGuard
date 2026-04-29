@@ -7,6 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Utility functions for CPL CoreGuard.
+ *
+ * @package CPL_CoreGuard
+ * @since 1.0.0
+ * @author Al Amin <hmalaminmb4@gmail.com>
  */
 class Utils {
 

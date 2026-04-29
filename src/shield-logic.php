@@ -1,7 +1,4 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 /**
  * CPL CoreGuard — MU-Plugin Logic.
  *
@@ -15,6 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @package CplCoreGuard
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 // Prevent direct HTTP access. CLI / db-error / shutdown contexts
 // won't have a web server REQUEST_METHOD, so this is safe.
@@ -32,7 +33,7 @@ define( 'CPL_COREGUARD_LOGIC_LOADED', true );
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. Load static config (written by the plugin on activation / settings save).
 // ─────────────────────────────────────────────────────────────────────────────
-$_cpl_cfg = __DIR__ . '/cpl-coreguard-config.php';
+$_cpl_cfg = __DIR__ . '/cpl-coreguard-config.php'; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 if ( file_exists( $_cpl_cfg ) && is_readable( $_cpl_cfg ) ) {
 	include_once $_cpl_cfg;
 }
@@ -43,9 +44,19 @@ unset( $_cpl_cfg );
 // Runs only when invoked from wp-config.php (i.e. very early in the
 // request lifecycle, before normal MU-plugin loading).
 // ─────────────────────────────────────────────────────────────────────────────
-if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
 
-	function cpl_register_fatal_handler(): void {
+
+if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
+	/**
+	 * The main function that will catch and handle fatal error.
+	 *
+	 * The PHP built in func to handle fatal error.
+	 * It is not top level but lower level function to handle
+	 * UI for brand and SEO.
+	 *
+	 * @return void
+	 */
+	function cpl_register_fatal_handler(): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		// Start output buffering so we can discard any partial output.
 		if ( ob_get_level() === 0 ) {
 			ob_start();
@@ -98,7 +109,7 @@ if ( ! function_exists( 'cpl_send_headers' ) ) {
 	 *
 	 * @param int $status HTTP status code (503 or 500).
 	 */
-	function cpl_send_headers( int $status = 503 ): void {
+	function cpl_send_headers( int $status = 503 ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		if ( headers_sent() ) {
 			return;
 		}
@@ -128,7 +139,7 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	 *
 	 * @param bool $is_preview Whether this is a manual preview or a real error.
 	 */
-	function cpl_render_ui( $is_preview = false ): void {
+	function cpl_render_ui( $is_preview = false ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		// Resolve config with safe fallbacks.
 		$site_name = defined( 'CPL_SITE_NAME' ) ? CPL_SITE_NAME : 'Our Services';
 		$color     = defined( 'CPL_BRAND_COLOR' ) ? CPL_BRAND_COLOR : '#38bdf8';

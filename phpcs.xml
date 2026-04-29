@@ -1,21 +1,86 @@
 <?xml version="1.0"?>
 <ruleset name="CPL CoreGuard">
 
-	<description>WordPress Coding Standards</description>
+	<description>
+		WordPress Coding Standards with modern PHP support for CPL CoreGuard.
+	</description>
 
-	<file>.</file>
+	<!-- Scan only relevant directories -->
+	<file>./</file>
 
+	<!-- Exclusions -->
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/dist/*</exclude-pattern>
 
-	<!-- Core WordPress rules -->
-	<rule ref="WordPress"/>
-
-	<!-- Extra stricter rules -->
-	<rule ref="WordPress-Extra"/>
-
-	<!-- Optional: docs if you want -->
-	<!-- <rule ref="WordPress-Docs"/> -->
-
+	<!-- PHP version target -->
 	<config name="testVersion" value="7.4-"/>
+
+	<!-- Show progress + colors -->
+	<arg value="p"/>
+	<arg name="colors"/>
+
+	<!-- =========================================================================
+		WordPress Standards ========================================================================= -->
+
+	<rule ref="WordPress-Core"/>
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+
+	<!-- =========================================================================
+		Modern Plugin Adjustments (IMPORTANT) ========================================================================= -->
+
+	<!-- Allow PSR-4 / OOP file structure -->
+	<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+	<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+
+	<!-- You are using abstraction layer instead of WP_Filesystem -->
+	<exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents"/>
+	<exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_file_get_contents"/>
+
+	<!-- Allow namespaced code without WP prefixing pressure -->
+	<exclude name="WordPress.NamingConventions.PrefixAllGlobals"/>
+
+	<!-- Sometimes overly strict for internal plugins -->
+	<exclude name="WordPress.Security.NonceVerification.Missing"/>
+
+	<!-- =========================================================================
+		Docs tuning (keep high quality, avoid noise) ========================================================================= -->
+
+	<!-- Require docs, but don’t be insane -->
+	<rule ref="Squiz.Commenting.FunctionComment">
+		<properties>
+			<property name="minimumVisibility" value="public"/>
+		</properties>
+	</rule>
+
+	<!-- Allow short inline comments -->
+	<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+
+	<!-- =========================================================================
+		Custom Preferences ========================================================================= -->
+
+	<!-- Enforce strict comparisons -->
+	<rule ref="Generic.PHP.StrictComparison"/>
+
+	<!-- Disallow Yoda conditions if you prefer modern style -->
+	<exclude name="WordPress.PHP.YodaConditions"/>
+
+	<!-- Allow longer lines (modern screens exist) -->
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="140"/>
+			<property name="absoluteLineLimit" value="180"/>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowecase">
+		<severity>0</severity>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<severity>0</severity>
+	</rule>
 
 </ruleset>

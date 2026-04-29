@@ -1,6 +1,12 @@
+# Exclude from ZIP and SVN
 /tests export-ignore
 /.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
 /phpunit.xml export-ignore
+/phpcs.xml export-ignore
 /composer.json export-ignore
 /composer.lock export-ignore
-/.gitignore export-ignore
+
+# Ensure line endings are consistent
+*.php text eol=lf

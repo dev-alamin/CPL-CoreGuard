@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * File_System Class
+ *
+ * @package CPL_CoreGuard
+ */
+
 namespace Amin\CPL_CoreGuard\Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -8,13 +15,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 class File_System {
 
 	/**
-	 * Generic wrapper to write files.
-	 * This is the "Gold Mine" for mocking in PHPUnit.
+	 * Writes content to a file.
+	 *
+	 * @param string $path    The absolute path to the file.
+	 * @param string $content The text to write.
+	 * @param int    $flags   Optional. PHP file_put_contents flags.
+	 * @return bool Success or failure.
 	 */
 	public function put_contents( string $path, string $content, int $flags = LOCK_EX ): bool {
 		if ( strpos( $path, 'vfs://' ) === 0 ) {
-            $flags &= ~LOCK_EX; 
-        }
+			$flags &= ~LOCK_EX;
+		}
 
 		// You can swap this for the WP_Filesystem API later if permissions are an issue.
 		return false !== file_put_contents( $path, $content, $flags );
@@ -55,6 +66,10 @@ class File_System {
 	/**
 	 * Generic wrapper to delete files, with optional content check.
 	 * If $marker is provided, the file will only be deleted if it contains that string.
+	 *
+	 * @param string $path the path of file.
+	 * @param string $marker to check its own file or not.
+	 * @return bool
 	 */
 	public function remove_file( string $path, string $marker = '' ): bool {
 		if ( ! file_exists( $path ) ) {
