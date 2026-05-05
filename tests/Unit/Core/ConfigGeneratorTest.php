@@ -29,7 +29,7 @@ class ConfigGeneratorTest extends TestCase {
 
 		$modified = $generator->get_wp_config_modified_content( $original );
 
-		$this->assertStringContainsString( '/* CPL CoreGuard v1 */', $modified );
+		$this->assertStringContainsString( '/* FatalFLow v1 */', $modified );
 		$this->assertStringContainsString( "require_once __DIR__ . '/wp-content/mu-plugins/", $modified );
 	}
 }

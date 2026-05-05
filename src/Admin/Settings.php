@@ -1,22 +1,22 @@
 <?php
-namespace Amin\CPL_CoreGuard\Admin;
+namespace Amin\Fatal_Flow\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * CPL CoreGuard — Admin Settings Page.
+ * FatalFlow — Admin Settings Page.
  *
- * @package CplCoreGuard
+ * @package Fatal_Flow
  */
 
 
-use Amin\CPL_CoreGuard\Core\File_System;
-use Amin\CPL_CoreGuard\Core\Config_Generator;
+use Amin\Fatal_Flow\Core\File_System;
+use Amin\Fatal_Flow\Core\Config_Generator;
 
 /**
- * Admin Settings Page handler for CPL CoreGuard.
+ * Admin Settings Page handler for FatalFlow.
  *
  * Responsible for:
  * - Registering plugin settings via the WordPress Settings API.
@@ -24,7 +24,7 @@ use Amin\CPL_CoreGuard\Core\Config_Generator;
  * - Syncing configuration to a static file on option updates.
  * - Enqueueing minimal admin assets for UX enhancements.
  *
- * @package CplCoreGuard
+ * @package Fatal_Flow
  */
 final class Settings {
 
@@ -74,10 +74,10 @@ final class Settings {
 	 */
 	public function add_menu(): void {
 		add_options_page(
-			__( 'CPL CoreGuard', 'cpl-coreguard' ),
-			__( 'CPL CoreGuard', 'cpl-coreguard' ),
+			__( 'FatalFlow', 'fatalflow' ),
+			__( 'FatalFlow', 'fatalflow' ),
 			'manage_options',
-			'cpl-coreguard',
+			'fatalflow',
 			array( $this, 'render_page' )
 		);
 	}
@@ -92,8 +92,8 @@ final class Settings {
 	public function register_settings(): void {
 		// Register options with sanitize callbacks.
 		register_setting(
-			'cpl_coreguard_group',
-			'cpl_site_name',
+			'fatalflow_coreguard_group',
+			'fatalflow_site_name',
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_text_field',
@@ -101,8 +101,8 @@ final class Settings {
 			)
 		);
 		register_setting(
-			'cpl_coreguard_group',
-			'cpl_brand_color',
+			'fatalflow_coreguard_group',
+			'fatalflow_brand_color',
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => array( $this, 'sanitize_hex_color' ),
@@ -110,8 +110,8 @@ final class Settings {
 			)
 		);
 		register_setting(
-			'cpl_coreguard_group',
-			'cpl_maint_msg',
+			'fatalflow_coreguard_group',
+			'fatalflow_maint_msg',
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'sanitize_textarea_field',
@@ -119,8 +119,8 @@ final class Settings {
 			)
 		);
 		register_setting(
-			'cpl_coreguard_group',
-			'cpl_site_icon_url',
+			'fatalflow_coreguard_group',
+			'fatalflow_site_icon_url',
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => 'esc_url_raw',
@@ -129,49 +129,49 @@ final class Settings {
 		);
 
 		// Sync the static config file whenever any option changes.
-		foreach ( array( 'cpl_site_name', 'cpl_brand_color', 'cpl_maint_msg', 'cpl_site_icon_url' ) as $opt ) {
+		foreach ( array( 'fatalflow_site_name', 'fatalflow_brand_color', 'fatalflow_maint_msg', 'fatalflow_site_icon_url' ) as $opt ) {
 			add_action( "update_option_{$opt}", array( $this, 'sync_config' ) );
 			add_action( "add_option_{$opt}", array( $this, 'sync_config' ) );
 		}
 
 		// Section + fields.
 		add_settings_section(
-			'cpl_main_section',
+			'fatalflow_main_section',
 			'',   // No visible heading needed — we render our own UI.
 			'__return_false',
-			'cpl-coreguard'
+			'fatalflow'
 		);
 
 		add_settings_field(
-			'cpl_site_name',
-			__( 'Site / Brand Name', 'cpl-coreguard' ),
+			'fatalflow_site_name',
+			__( 'Site / Brand Name', 'fatalflow' ),
 			array( $this, 'field_site_name' ),
-			'cpl-coreguard',
-			'cpl_main_section'
+			'fatalflow',
+			'fatalflow_main_section'
 		);
 
 		add_settings_field(
-			'cpl_brand_color',
-			__( 'Brand Color', 'cpl-coreguard' ),
+			'fatalflow_brand_color',
+			__( 'Brand Color', 'fatalflow' ),
 			array( $this, 'field_brand_color' ),
-			'cpl-coreguard',
-			'cpl_main_section'
+			'fatalflow',
+			'fatalflow_main_section'
 		);
 
 		add_settings_field(
-			'cpl_site_icon_url',
-			__( 'Site Icon URL', 'cpl-coreguard' ),
+			'fatalflow_site_icon_url',
+			__( 'Site Icon URL', 'fatalflow' ),
 			array( $this, 'field_site_icon' ),
-			'cpl-coreguard',
-			'cpl_main_section'
+			'fatalflow',
+			'fatalflow_main_section'
 		);
 
 		add_settings_field(
-			'cpl_maint_msg',
-			__( 'Maintenance Message', 'cpl-coreguard' ),
+			'fatalflow_maint_msg',
+			__( 'Maintenance Message', 'fatalflow' ),
 			array( $this, 'field_maint_msg' ),
-			'cpl-coreguard',
-			'cpl_main_section'
+			'fatalflow',
+			'fatalflow_main_section'
 		);
 	}
 
@@ -182,29 +182,29 @@ final class Settings {
 		 * @return void
 		 */
 	public function enqueue_assets( string $hook ): void {
-		if ( 'settings_page_cpl-coreguard' !== $hook ) {
+		if ( 'settings_page_fatalflow' !== $hook ) {
 			return;
 		}
 		// Minimal admin styles inline — no external files required.
 		$css = '
-		.cpl-admin-wrap { max-width: 720px; }
-		.cpl-admin-wrap .form-table th { width: 200px; }
-		.cpl-admin-wrap .description { color: #646970; font-style: italic; }
-		.cpl-color-preview {
+		.fatalflow-admin-wrap { max-width: 720px; }
+		.fatalflow-admin-wrap .form-table th { width: 200px; }
+		.fatalflow-admin-wrap .description { color: #646970; font-style: italic; }
+		.fatalflow-color-preview {
 			display: inline-block; width: 28px; height: 28px;
 			border-radius: 6px; vertical-align: middle; margin-left: 8px;
 			border: 1px solid rgba(0,0,0,.15); transition: background .2s;
 		}
 		';
-		wp_register_style( 'cpl-admin', false, array(), CPL_COREGUARD_VERSION );
-		wp_enqueue_style( 'cpl-admin' );
-		wp_add_inline_style( 'cpl-admin', $css );
+		wp_register_style( 'fatalflow-admin', false, array(), FATALFLOW_VERSION );
+		wp_enqueue_style( 'fatalflow-admin' );
+		wp_add_inline_style( 'fatalflow-admin', $css );
 
 		// Tiny JS to live-preview the color swatch.
 		$js = '
 		document.addEventListener("DOMContentLoaded", function () {
-			var picker  = document.getElementById("cpl_brand_color");
-			var preview = document.getElementById("cpl_color_preview");
+			var picker  = document.getElementById("fatalflow_brand_color");
+			var preview = document.getElementById("fatalflow_color_preview");
 			if ( picker && preview ) {
 				preview.style.background = picker.value;
 				picker.addEventListener("input", function () {
@@ -227,10 +227,10 @@ final class Settings {
 		 */
 	public function field_site_name(): void {
 		printf(
-			'<input type="text" id="cpl_site_name" name="cpl_site_name" class="regular-text" value="%s" />',
-			esc_attr( get_option( 'cpl_site_name', get_bloginfo( 'name' ) ) )
+			'<input type="text" id="fatalflow_site_name" name="fatalflow_site_name" class="regular-text" value="%s" />',
+			esc_attr( get_option( 'fatalflow_site_name', get_bloginfo( 'name' ) ) )
 		);
-		echo '<p class="description">' . esc_html__( 'Displayed on the maintenance screen. Defaults to your site title.', 'cpl-coreguard' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Displayed on the maintenance screen. Defaults to your site title.', 'fatalflow' ) . '</p>';
 	}
 
 			/**
@@ -241,16 +241,16 @@ final class Settings {
 			 * @return void
 			 */
 	public function field_brand_color(): void {
-		$color = esc_attr( get_option( 'cpl_brand_color', '#38bdf8' ) );
+		$color = esc_attr( get_option( 'fatalflow_brand_color', '#38bdf8' ) );
 		printf(
-			'<input type="color" id="cpl_brand_color" name="cpl_brand_color" value="%s" />',
+			'<input type="color" id="fatalflow_brand_color" name="fatalflow_brand_color" value="%s" />',
 			$color // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 		printf(
-			'<span id="cpl_color_preview" class="cpl-color-preview" style="background:%s;" aria-hidden="true"></span>',
+			'<span id="fatalflow_color_preview" class="fatalflow-color-preview" style="background:%s;" aria-hidden="true"></span>',
 			$color // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
-		echo '<p class="description">' . esc_html__( 'Accent color used in the recovery UI.', 'cpl-coreguard' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Accent color used in the recovery UI.', 'fatalflow' ) . '</p>';
 	}
 
 		/**
@@ -259,12 +259,12 @@ final class Settings {
 		 * @return void
 		 */
 	public function field_site_icon(): void {
-		$url = esc_url( get_option( 'cpl_site_icon_url', '' ) );
+		$url = esc_url( get_option( 'fatalflow_site_icon_url', '' ) );
 		printf(
-			'<input type="url" id="cpl_site_icon_url" name="cpl_site_icon_url" class="regular-text" value="%s" placeholder="https://example.com/icon.png" />',
+			'<input type="url" id="fatalflow_site_icon_url" name="fatalflow_site_icon_url" class="regular-text" value="%s" placeholder="https://example.com/icon.png" />',
 			$url // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
-		echo '<p class="description">' . esc_html__( 'Full URL to a PNG/SVG icon (recommended: 512×512 px). Shown on the recovery screen. Leave blank to use the shield icon.', 'cpl-coreguard' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Full URL to a PNG/SVG icon (recommended: 512×512 px). Shown on the recovery screen. Leave blank to use the shield icon.', 'fatalflow' ) . '</p>';
 	}
 
 		/**
@@ -274,10 +274,10 @@ final class Settings {
 		 */
 	public function field_maint_msg(): void {
 		printf(
-			'<textarea id="cpl_maint_msg" name="cpl_maint_msg" class="large-text" rows="3">%s</textarea>',
-			esc_textarea( get_option( 'cpl_maint_msg', __( 'Brief technical update in progress.', 'cpl-coreguard' ) ) )
+			'<textarea id="fatalflow_maint_msg" name="fatalflow_maint_msg" class="large-text" rows="3">%s</textarea>',
+			esc_textarea( get_option( 'fatalflow_maint_msg', __( 'Brief technical update in progress.', 'fatalflow' ) ) )
 		);
-		echo '<p class="description">' . esc_html__( 'Short message shown beneath the heading on the recovery screen.', 'cpl-coreguard' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Short message shown beneath the heading on the recovery screen.', 'fatalflow' ) . '</p>';
 	}
 
 	// -------------------------------------------------------------------------
@@ -297,36 +297,36 @@ final class Settings {
 	public function render_page(): void {
 		// Generate the secure preview URL.
 		$preview_url = wp_nonce_url(
-			admin_url( 'options-general.php?page=cpl-coreguard&cpl_preview=1' ),
-			'cpl_preview_action'
+			admin_url( 'options-general.php?page=fatalflow&fatalflow_preview=1' ),
+			'fatalflow_preview_action'
 		);
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'cpl-coreguard' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'fatalflow' ) );
 		}
 		?>
-		<div class="wrap cpl-admin-wrap">
+		<div class="wrap fatalflow-admin-wrap">
 			<h1>
 				<?php
 				echo '<svg style="vertical-align:middle;margin-right:8px;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
-				esc_html_e( 'CPL CoreGuard', 'cpl-coreguard' );
+				esc_html_e( 'FatalFlow', 'fatalflow' );
 				?>
 			</h1>
-			<p><?php esc_html_e( 'Configure the brand and messaging shown on the recovery screen during fatal errors or database failures.', 'cpl-coreguard' ); ?></p>
+			<p><?php esc_html_e( 'Configure the brand and messaging shown on the recovery screen during fatal errors or database failures.', 'fatalflow' ); ?></p>
 
-			<?php settings_errors( 'cpl_coreguard_group' ); ?>
+			<?php settings_errors( 'fatalflow_coreguard_group' ); ?>
 
 			<form method="post" action="options.php">
 				<?php
-				settings_fields( 'cpl_coreguard_group' );
-				do_settings_sections( 'cpl-coreguard' );
-				submit_button( __( 'Save &amp; Sync Configuration', 'cpl-coreguard' ) );
+				settings_fields( 'fatalflow_coreguard_group' );
+				do_settings_sections( 'fatalflow' );
+				submit_button( __( 'Save &amp; Sync Configuration', 'fatalflow' ) );
 				?>
 			</form>
 			<a href="<?php echo esc_url( $preview_url ); ?>" 
 			target="_blank" 
 			class="button button-secondary">
-				<?php esc_html_e( 'Live Preview Template', 'cpl-coreguard' ); ?>
+				<?php esc_html_e( 'Live Preview Template', 'fatalflow' ); ?>
 			</a>
 		</div>
 		<?php
@@ -345,7 +345,7 @@ final class Settings {
 	 */
 	public function sync_config(): void {
 		$this->fs->put_contents(
-			trailingslashit( WPMU_PLUGIN_DIR ) . CPL_COREGUARD_CFG_FILE,
+			trailingslashit( WPMU_PLUGIN_DIR ) . FATALFLOW_CFG_FILE,
 			$this->conf->get_config_file_contents()
 		);
 	}

@@ -1,16 +1,16 @@
 <?php
 /**
- * CPL CoreGuard — MU-Plugin Logic.
+ * FatalFlow — MU-Plugin Logic.
  *
  * This file is intentionally self-contained and dependency-free.
  * It must work even when WordPress core has not fully loaded
  * (e.g. when called from db-error.php or via the wp-config.php
  * shutdown handler, before ABSPATH is defined).
  *
- * Deployed to: wp-content/mu-plugins/cpl-coreguard-logic.php
- * Config at:   wp-content/mu-plugins/cpl-coreguard-config.php
+ * Deployed to: wp-content/mu-plugins/fatalflow-logic.php
+ * Config at:   wp-content/mu-plugins/fatalflow-config.php
  *
- * @package CplCoreGuard
+ * @package Fatal_Flow
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,25 +19,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Prevent direct HTTP access. CLI / db-error / shutdown contexts
 // won't have a web server REQUEST_METHOD, so this is safe.
-if ( isset( $_SERVER['REQUEST_METHOD'] ) && ! defined( 'ABSPATH' ) && ! defined( 'CPL_COREGUARD_LOGIC_LOADED' ) ) {
+if ( isset( $_SERVER['REQUEST_METHOD'] ) && ! defined( 'ABSPATH' ) && ! defined( 'FATALFLOW_LOADED' ) ) {
 	header( 'HTTP/1.1 403 Forbidden' );
 	exit;
 }
 
 // Hard guard against double-loading.
-if ( defined( 'CPL_COREGUARD_LOGIC_LOADED' ) ) {
+if ( defined( 'FATALFLOW_LOADED' ) ) {
 	return;
 }
-define( 'CPL_COREGUARD_LOGIC_LOADED', true );
+define( 'FATALFLOW_LOADED', true );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. Load static config (written by the plugin on activation / settings save).
 // ─────────────────────────────────────────────────────────────────────────────
-$_cpl_cfg = __DIR__ . '/cpl-coreguard-config.php'; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-if ( file_exists( $_cpl_cfg ) && is_readable( $_cpl_cfg ) ) {
-	include_once $_cpl_cfg;
+$_fatalflow_cfg = __DIR__ . '/fatalflow-config.php'; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+if ( file_exists( $_fatalflow_cfg ) && is_readable( $_fatalflow_cfg ) ) {
+	include_once $_fatalflow_cfg;
 }
-unset( $_cpl_cfg );
+unset( $_fatalflow_cfg );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. Register the shutdown handler for PHP fatal errors.
@@ -46,7 +46,7 @@ unset( $_cpl_cfg );
 // ─────────────────────────────────────────────────────────────────────────────
 
 
-if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
+if ( ! function_exists( 'fatalflow_register_fatal_handler' ) ) {
 	/**
 	 * The main function that will catch and handle fatal error.
 	 *
@@ -56,7 +56,7 @@ if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
 	 *
 	 * @return void
 	 */
-	function cpl_register_fatal_handler(): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+	function fatalflow_register_fatal_handler(): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		// Start output buffering so we can discard any partial output.
 		if ( ob_get_level() === 0 ) {
 			ob_start();
@@ -81,7 +81,7 @@ if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
 				// WP debug log integration — write the error before we override output.
 				if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
 					$log = sprintf(
-						'[CPL CoreGuard] Fatal intercepted — %s in %s on line %d',
+						'[FatalFlow] Fatal intercepted — %s in %s on line %d',
 						$error['message'],
 						$error['file'],
 						$error['line']
@@ -90,26 +90,26 @@ if ( ! function_exists( 'cpl_register_fatal_handler' ) ) {
 					error_log( $log );
 				}
 
-				cpl_send_headers( 503 );
-				cpl_render_ui();
+				fatalflow_send_headers( 503 );
+				fatalflow_render_ui();
 			}
 		);
 	}
 
-	cpl_register_fatal_handler();
+	fatalflow_register_fatal_handler();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Send safe HTTP headers.
 // ─────────────────────────────────────────────────────────────────────────────
-if ( ! function_exists( 'cpl_send_headers' ) ) {
+if ( ! function_exists( 'fatalflow_send_headers' ) ) {
 
 	/**
 	 * Emits appropriate HTTP headers.
 	 *
 	 * @param int $status HTTP status code (503 or 500).
 	 */
-	function cpl_send_headers( int $status = 503 ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+	function fatalflow_send_headers( int $status = 503 ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		if ( headers_sent() ) {
 			return;
 		}
@@ -131,7 +131,7 @@ if ( ! function_exists( 'cpl_send_headers' ) ) {
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. Main UI renderer — called by fatal handler AND by db-error.php drop-in.
 // ─────────────────────────────────────────────────────────────────────────────
-if ( ! function_exists( 'cpl_render_ui' ) ) {
+if ( ! function_exists( 'fatalflow_render_ui' ) ) {
 
 	/**
 	 * Outputs a full, standalone HTML maintenance/error page and exits.
@@ -139,13 +139,13 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 	 *
 	 * @param bool $is_preview Whether this is a manual preview or a real error.
 	 */
-	function cpl_render_ui( $is_preview = false ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+	function fatalflow_render_ui( $is_preview = false ): void { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		// Resolve config with safe fallbacks.
-		$site_name = defined( 'CPL_SITE_NAME' ) ? CPL_SITE_NAME : 'Our Services';
-		$color     = defined( 'CPL_BRAND_COLOR' ) ? CPL_BRAND_COLOR : '#38bdf8';
-		$message   = defined( 'CPL_MAINT_MSG' ) ? CPL_MAINT_MSG : 'Brief technical update in progress.';
-		$lang      = defined( 'CPL_LOCALE' ) ? CPL_LOCALE : 'en';
-		$icon_url  = defined( 'CPL_SITE_ICON_URL' ) ? CPL_SITE_ICON_URL : '';
+		$site_name = defined( 'FATALFLOW_SITE_NAME' ) ? FATALFLOW_SITE_NAME : 'Our Services';
+		$color     = defined( 'FATALFLOW_BRAND_COLOR' ) ? FATALFLOW_BRAND_COLOR : '#38bdf8';
+		$message   = defined( 'FATALFLOW_MAINT_MSG' ) ? FATALFLOW_MAINT_MSG : 'Brief technical update in progress.';
+		$lang      = defined( 'FATALFLOW_LOCALE' ) ? FATALFLOW_LOCALE : 'en';
+		$icon_url  = defined( 'FATALFLOW_SITE_ICON_URL' ) ? FATALFLOW_SITE_ICON_URL : '';
 
 		// Strip locale region for <html lang> (e.g. "en_US" → "en").
 		$html_lang = strtolower( str_replace( '_', '-', substr( $lang, 0, 5 ) ) );
@@ -177,7 +177,7 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 		);
 
 		if ( ! $is_preview && ! headers_sent() ) {
-			cpl_send_headers( 503 );
+			fatalflow_send_headers( 503 );
 		}
 
 		// phpcs:disable
@@ -217,7 +217,7 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 		}
 
 		body {
-			font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -308,7 +308,7 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 
 		/* ── Typography ───────────────────────────── */
 		.zs-heading {
-			font-family: 'DM Serif Display', Georgia, serif;
+			font-family: Georgia, 'Times New Roman', serif;
 			font-size: clamp(1.6rem, 5vw, 2.2rem);
 			font-weight: 400;
 			line-height: 1.15;
@@ -398,13 +398,6 @@ if ( ! function_exists( 'cpl_render_ui' ) ) {
 			.zs-card { border-radius: 1.5rem; }
 		}
 	</style>
-	<!--
-		Google Fonts — gracefully absent if offline; fonts fall back to system stack.
-		Loaded with display=swap to prevent FOIT.
-	-->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 </head>
 <body>
 

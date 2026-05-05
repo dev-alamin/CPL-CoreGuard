@@ -4,18 +4,18 @@ define( 'CPL_PLUGIN_ROOT', dirname( __DIR__ ) );
 require_once CPL_PLUGIN_ROOT . '/vendor/autoload.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
-    define( 'ABSPATH', '/home/runner/work/CPL-CoreGuard/CPL-CoreGuard/' );
+	define( 'ABSPATH', '/home/runner/work/CPL-CoreGuard/CPL-CoreGuard/' );
 }
 
 // Mock WordPress Constants for Testing
 if ( ! defined( 'ABSPATH' ) ) {
-    define( 'ABSPATH', realpath( __DIR__ . '/..' ) . '/' );
+	define( 'ABSPATH', realpath( __DIR__ . '/..' ) . '/' );
 }
 define( 'WPMU_PLUGIN_DIR', '/var/www/html/wp-content/mu-plugins' );
 define( 'WP_CONTENT_DIR', '/var/www/html/wp-content' );
-define( 'CPL_COREGUARD_VERSION', '1.0.0' );
-define( 'CPL_COREGUARD_MU_FILE', 'cpl-coreguard-logic.php' );
-define( 'CPL_COREGUARD_CFG_FILE', 'cpl-coreguard-config.php' );
+define( 'FATALFLOW_VERSION', '1.0.0' );
+define( 'FATALFLOW_MU_FILE', 'fatalflow-logic.php' );
+define( 'FATALFLOW_CFG_FILE', 'fatalflow-config.php' );
 
 // Add these to your existing bootstrap.php
 function sanitize_textarea_field( $text ) {

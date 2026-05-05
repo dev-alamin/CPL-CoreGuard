@@ -1,14 +1,14 @@
 <?php
-namespace Amin\CPL_CoreGuard\Utils;
+namespace Amin\Fatal_Flow\Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
 /**
- * Utility functions for CPL CoreGuard.
+ * Utility functions for FatalFlow.
  *
- * @package CPL_CoreGuard
+ * @package Fatal_Flow
  * @since 1.0.0
  * @author Al Amin <hmalaminmb4@gmail.com>
  */

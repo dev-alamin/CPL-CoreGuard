@@ -25,17 +25,17 @@ jobs:
       # 2. Bundle everything into a folder first (to control structure)
       - name: Prepare Bundle
         run: |
-          mkdir -p cpl-coreguard
-          cp -r src vendor languages cpl-coreguard.php readme.txt cpl-coreguard/
+          mkdir -p fatalflow
+          cp -r src vendor languages fatalflow.php readme.txt fatalflow/
 
       # 3. Create the actual ZIP
       - name: Create ZIP
-        run: zip -r cpl-coreguard.zip cpl-coreguard/
+        run: zip -r fatalflow.zip fatalflow/
 
       # 4. Create a GitHub Release and attach the ZIP
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: cpl-coreguard.zip
+          files: fatalflow.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

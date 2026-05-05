@@ -1,10 +1,10 @@
 {
-    "name": "amin/cpl-coreguard",
+    "name": "amin/fatalflow",
     "type": "wordpress-plugin",
     "license": "GPLv2",
     "autoload": {
         "psr-4": {
-            "Amin\\CPL_CoreGuard\\": "src/"
+            "Amin\\Fatal_Flow\\": "src/"
         }
     },
     "authors": [
@@ -25,7 +25,8 @@
         "phpcsstandards/phpcsextra": "^1.0@dev",
         "phpunit/phpunit": "^9.0",
         "mockery/mockery": "^1.4",
-        "mikey179/vfsstream": "^1.6"
+        "mikey179/vfsstream": "^1.6",
+        "phpcompatibility/php-compatibility": "^10.0@alpha"
     },
     "config": {
         "allow-plugins": {

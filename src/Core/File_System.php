@@ -3,10 +3,10 @@
 /**
  * File_System Class
  *
- * @package CPL_CoreGuard
+ * @package Fatal_Flow
  */
 
-namespace Amin\CPL_CoreGuard\Core;
+namespace Amin\Fatal_Flow\Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -53,8 +53,8 @@ class File_System {
 	 * Deploys the self-contained logic file to the mu-plugins directory.
 	 */
 	public function deploy_mu_plugin(): bool {
-		$source = CPL_COREGUARD_DIR . 'src/shield-logic.php';
-		$dest   = trailingslashit( WPMU_PLUGIN_DIR ) . CPL_COREGUARD_MU_FILE;
+		$source = FATALFLOW_DIR . 'src/shield-logic.php';
+		$dest   = trailingslashit( WPMU_PLUGIN_DIR ) . FATALFLOW_MU_FILE;
 
 		if ( ! file_exists( $source ) ) {
 			return false;
@@ -92,7 +92,7 @@ class File_System {
 	 * * @return bool True if deleted or never existed.
 	 */
 	public function remove_mu_plugin(): bool {
-		$path = trailingslashit( WPMU_PLUGIN_DIR ) . CPL_COREGUARD_MU_FILE;
+		$path = trailingslashit( WPMU_PLUGIN_DIR ) . FATALFLOW_MU_FILE;
 
 		if ( ! file_exists( $path ) ) {
 			return true;
@@ -106,7 +106,7 @@ class File_System {
 	 * * @return bool True if deleted or never existed.
 	 */
 	public function remove_config_file(): bool {
-		$path = trailingslashit( WPMU_PLUGIN_DIR ) . CPL_COREGUARD_CFG_FILE;
+		$path = trailingslashit( WPMU_PLUGIN_DIR ) . FATALFLOW_CFG_FILE;
 
 		if ( ! file_exists( $path ) ) {
 			return true;

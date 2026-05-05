@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="CPL CoreGuard">
+<ruleset name="FatalFLow">
 
 	<description>
-		WordPress Coding Standards with modern PHP support for CPL CoreGuard.
+		WordPress Coding Standards with modern PHP support for FatalFLow.
 	</description>
 
 	<!-- Scan only relevant directories -->
@@ -60,9 +60,6 @@
 
 	<!-- =========================================================================
 		Custom Preferences ========================================================================= -->
-
-	<!-- Enforce strict comparisons -->
-	<rule ref="Generic.PHP.StrictComparison"/>
 
 	<!-- Disallow Yoda conditions if you prefer modern style -->
 	<exclude name="WordPress.PHP.YodaConditions"/>
