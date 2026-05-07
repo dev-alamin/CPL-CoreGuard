@@ -24,7 +24,7 @@ if ( isset( $_SERVER['REQUEST_METHOD'] ) && ! defined( 'ABSPATH' ) && ! defined(
 	exit;
 }
 
-// Hard guard against double-loading.
+// Prevent double-loading (e.g. if somehow symlinked into mu-plugins).
 if ( defined( 'FATALFLOW_LOADED' ) ) {
 	return;
 }

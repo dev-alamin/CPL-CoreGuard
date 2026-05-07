@@ -18,10 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Prevent double-loading (e.g. if somehow symlinked into mu-plugins).
-
-define( 'FATALFLOW_LOADED', true );
-
 // Plugin constants.
 define( 'FATALFLOW_VERSION', '1.0.0' );
 define( 'FATALFLOW_FILE', __FILE__ );
