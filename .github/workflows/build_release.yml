@@ -23,19 +23,15 @@ jobs:
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
       # 2. Bundle everything into a folder first (to control structure)
+      # Added composer.json and any other .json files to the copy list
       - name: Prepare Bundle
         run: |
           mkdir -p fatalflow
-          cp -r src vendor languages fatalflow.php readme.txt fatalflow/
+          cp -r src vendor languages fatalflow.php readme.txt composer.json fatalflow/
+          # If you have other specific JSON files, add them here:
+          # cp config.json fatalflow/ 
 
       # 3. Create the actual ZIP
+      # Using -r (recursive) and -9 (max compression)
       - name: Create ZIP
-        run: zip -r fatalflow.zip fatalflow/
-
-      # 4. Create a GitHub Release and attach the ZIP
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: fatalflow.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: zip -r9 fatalflow.zip fatalflow/
