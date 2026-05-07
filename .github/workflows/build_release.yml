@@ -1,4 +1,5 @@
 name: Generate Plugin ZIP
+
 on:
   push:
     tags:
@@ -9,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -18,25 +20,36 @@ jobs:
         with:
           php-version: '7.4'
 
-      # 1. Install production dependencies (generates the vendor folder)
       - name: Install Dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      # 2. Bundle everything
       - name: Prepare Bundle
         run: |
           mkdir -p fatalflow
-          # Copy folders
+          # Copy core directories
           cp -r src fatalflow/
-          cp -r vendor fatalflow/
+          cp -r vendor fatalflow/ || echo "Vendor folder not found, skipping..."
           cp -r languages fatalflow/
-          # Copy files
+
+          # Copy core files
           cp fatalflow.php fatalflow/
           cp readme.txt fatalflow/
           cp composer.json fatalflow/
-          # Verify files exist in the bundle folder before zipping
+
+          if [ -f composer.lock ]; then
+            cp composer.lock fatalflow/
+          fi
+
+          # Debug: Log the structure to the GitHub Console
+          echo "Final ZIP Structure:"
           ls -R fatalflow/
 
-      # 3. Create the actual ZIP
       - name: Create ZIP
         run: zip -r fatalflow.zip fatalflow/
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: fatalflow.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
