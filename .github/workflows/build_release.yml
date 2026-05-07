@@ -18,22 +18,25 @@ jobs:
         with:
           php-version: '7.4'
 
-      # 1. Physical installation of the production vendor folder
+      # 1. Install production dependencies (generates the vendor folder)
       - name: Install Dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      # 2. Bundle everything into a folder first
+      # 2. Bundle everything
       - name: Prepare Bundle
         run: |
           mkdir -p fatalflow
-          # Copying directories
-          cp -r src vendor languages fatalflow/
-          # Explicitly copying individual files to ensure they are picked up
-          cp fatalflow.php readme.txt composer.json fatalflow/
-          # Optional: If you have a package.json or other configs
-          # cp package.json fatalflow/ 2>/dev/null || true
+          # Copy folders
+          cp -r src fatalflow/
+          cp -r vendor fatalflow/
+          cp -r languages fatalflow/
+          # Copy files
+          cp fatalflow.php fatalflow/
+          cp readme.txt fatalflow/
+          cp composer.json fatalflow/
+          # Verify files exist in the bundle folder before zipping
+          ls -R fatalflow/
 
       # 3. Create the actual ZIP
-      # Using -r (recursive) and -9 (max compression)
       - name: Create ZIP
-        run: zip -r9 fatalflow.zip fatalflow/
+        run: zip -r fatalflow.zip fatalflow/
