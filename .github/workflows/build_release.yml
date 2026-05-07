@@ -22,14 +22,16 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      # 2. Bundle everything into a folder first (to control structure)
-      # Added composer.json and any other .json files to the copy list
+      # 2. Bundle everything into a folder first
       - name: Prepare Bundle
         run: |
           mkdir -p fatalflow
-          cp -r src vendor languages fatalflow.php readme.txt composer.json fatalflow/
-          # If you have other specific JSON files, add them here:
-          # cp config.json fatalflow/ 
+          # Copying directories
+          cp -r src vendor languages fatalflow/
+          # Explicitly copying individual files to ensure they are picked up
+          cp fatalflow.php readme.txt composer.json fatalflow/
+          # Optional: If you have a package.json or other configs
+          # cp package.json fatalflow/ 2>/dev/null || true
 
       # 3. Create the actual ZIP
       # Using -r (recursive) and -9 (max compression)
