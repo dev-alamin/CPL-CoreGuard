@@ -288,21 +288,28 @@ if ( ! function_exists( 'fatalflow_render_ui' ) ) {
 		@keyframes zs-progress { 0% { width: 0%; } 100% { width: 100%; } }
 	";
 
-	// Check if it is a preview AND verify the nonce for security
-		$is_preview_request = isset( $_GET['fatalflow_preview'] );
+	// 1. Determine the context
+	$is_preview = isset( $_GET['fatalflow_preview'] );
 
-		if ( $is_preview_request ) {
-			// Verified preview: Force the style tag out
-			echo '<style id="fatalflow-preview-css">' . $fatalflow_css . '</style>';
-		}
+	/**
+	 * We only use the "WP way" if:
+	 * 1. The functions exist.
+	 * 2. It's NOT a preview.
+	 * 3. We are currently in or after the 'wp_enqueue_scripts' hook.
+	 */
+	$can_enqueue = function_exists( 'wp_add_inline_style' ) && 
+				! $is_preview && 
+				did_action( 'wp_enqueue_scripts' );
 
-	// 2. Conditional output to satisfy reviewers + handle fatal errors
-	if ( function_exists( 'wp_add_inline_style' ) ) {
-			wp_register_style( 'fatalflow-logic', false );
-			wp_enqueue_style( 'fatalflow-logic' );
-			wp_add_inline_style( 'fatalflow-logic', $fatalflow_css );
+	// 2. Handle output
+	if ( $can_enqueue ) {
+		wp_register_style( 'fatalflow-logic', false );
+		wp_enqueue_style( 'fatalflow-logic' );
+		wp_add_inline_style( 'fatalflow-logic', $fatalflow_css );
 	} else {
-			echo '<style>' . fatalflow_strip_tags( $fatalflow_css ) . '</style>';
+		// This will catch Fatal Errors, Previews, and Early Loads
+		$style_id = $is_preview ? ' id="fatalflow-preview-css"' : '';
+		echo '<style' . $style_id . '>' . fatalflow_strip_tags( $fatalflow_css ) . '</style>';
 	}
 	?>
 </head>
