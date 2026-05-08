@@ -1,4 +1,4 @@
-name: Generate Plugin ZIP
+name: Generate Plugin ZIP & Deploy
 
 on:
   push:
@@ -26,38 +26,30 @@ jobs:
       - name: Prepare Bundle
         run: |
           mkdir -p fatalflow
-          # Copy core directories
+          # Copy everything into the bundle folder
           cp -r src fatalflow/
-          cp -r vendor fatalflow/ || echo "Vendor folder not found, skipping..."
+          cp -r vendor fatalflow/
           cp -r languages fatalflow/
-
-          # Copy core files
           cp fatalflow.php fatalflow/
           cp readme.txt fatalflow/
           cp composer.json fatalflow/
-
-          if [ -f composer.lock ]; then
-            cp composer.lock fatalflow/
-          fi
-
-          # Debug: Log the structure to the GitHub Console
-          echo "Final ZIP Structure:"
-          ls -R fatalflow/
+          if [ -f composer.lock ]; then cp composer.lock fatalflow/; fi
 
       - name: Create ZIP
         run: zip -r fatalflow.zip fatalflow/
 
-      - name: Upload Release Asset
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: fatalflow.zip
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Deploy to WordPress.org SVN
-        uses: 10up/action-wordpress-dot-org-deploy@stable
+        uses: 10up/action-wordpress-dot-org-deploy@v2.2.1
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SLUG: fatalflow
-          BUILD_DIR: fatalflow
+          BUILD_DIR: fatalflow/
