@@ -1,7 +1,7 @@
-=== FatalFlow – Instant Recovery UI, SEO Shield & Fatal Error Handler ===
+=== FatalFlow – WordPress Fatal Error Recovery & SEO Protection ===
 
 Contributors:      coderalamin
-Tags:              fatal-error, database-error, recovery, mu-plugin
+Tags:              fatal-error, database-error, recovery, seo, white-screen-of-death
 Requires at least: 5.9
 Tested up to:      6.9
 Requires PHP:      7.4
@@ -9,38 +9,55 @@ Stable tag:        1.0.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-The ultimate safety net for professional WordPress websites.
+Protect your WordPress website from fatal errors, database crashes, and SEO damage with an instant recovery maintenance UI.
 
 == Description ==
 
-> The ultimate safety net for professional WordPress websites.
+> Professional-grade fatal error protection for WordPress websites.
 
-When a plugin update fails or your database goes offline, most sites show a broken "White Screen of Death" — scaring away customers and triggering Google de-indexing. **FatalFlow** intercepts these failures *before* WordPress even boots, replacing broken code and database errors with a polished, branded recovery UI that keeps your site looking professional no matter what.
+When a plugin update fails or your database server goes offline, most WordPress sites collapse into a broken white screen or generic server error. This hurts customer trust, interrupts sales, and can negatively impact SEO crawling.
 
----
+**FatalFlow** intercepts fatal PHP and database failures *before WordPress fully loads*, displaying a clean branded recovery page instead of a broken website.
 
-## Protect Your SEO & Business Reputation
-
-**Keep Search Crawlers Happy**
-Instead of a broken 404 or 500 error, FatalFlow sends a proper `503 Service Unavailable` status — telling Google your site is temporarily down for maintenance and saving your SEO rankings.
-
-**Instant Recovery UI**
-Deploys a beautiful glassmorphism maintenance page that works even when WordPress core is completely inaccessible.
-
-**Zero-Dependency Logic**
-Operates as a system-level drop-in. No database, no active plugins required — it's there when nothing else is.
-
-**Enterprise-Grade Reliability**
-Built for small businesses that cannot afford a single minute of broken appearance.
+Perfect for agencies, WooCommerce stores, business websites, and production environments.
 
 ---
 
-## Technical Highlights
+## Why FatalFlow?
 
-- Automatic deployment of the `db-error.php` drop-in
-- High-priority MU-plugin handler for PHP fatals (`E_ERROR`, `E_PARSE`)
-- **Lightweight & fast** — zero impact on site speed during normal operation
-- **Clean deactivation** — removes all system modifications automatically
+### Protect Your SEO Rankings
+
+FatalFlow returns a proper:
+
+`503 Service Unavailable`
+
+response with a `Retry-After` header — helping search engines understand that your site is temporarily unavailable instead of permanently broken.
+
+This helps reduce the risk of:
+- Google de-indexing
+- SEO ranking drops
+- Crawling issues caused by 500 errors
+
+### Prevent the "White Screen of Death"
+
+Instead of exposing visitors to raw PHP fatal errors or blank pages, FatalFlow shows:
+- a professional maintenance screen,
+- loading indicator,
+- branded messaging,
+- modern glassmorphism UI.
+
+### Works Even When WordPress Fails
+
+FatalFlow operates using:
+- MU-plugin recovery logic
+- `db-error.php` drop-ins
+- shutdown fatal handlers
+
+This means protection still works when:
+- plugins crash,
+- themes break,
+- database connections fail,
+- WordPress core cannot fully boot.
 
 ---
 
@@ -48,33 +65,71 @@ Built for small businesses that cannot afford a single minute of broken appearan
 
 | Feature | Details |
 |---|---|
-| Fatal error coverage | `E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR` |
-| Database failure coverage | Via `db-error.php` drop-in |
-| SEO-safe response | `503 Service Unavailable` with `Retry-After` header |
-| Zero WP dependencies | Works even when WordPress core is broken |
-| Branded maintenance UI | Animated progress bar, dark glassmorphism design |
-| WP-CLI safe | Shutdown handler skips during CLI operations |
-| Clean removal | No files left behind on deactivation |
+| Fatal error protection | Handles `E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR` |
+| Database outage recovery | Automatic `db-error.php` deployment |
+| SEO-safe maintenance mode | Sends proper `503` headers |
+| Zero dependency architecture | Works without database or active plugins |
+| Lightweight performance | No frontend slowdown during normal operation |
+| Beautiful recovery UI | Modern dark glassmorphism maintenance screen |
+| WP-CLI aware | Automatically skips handlers during CLI operations |
+| Safe cleanup | Removes generated files on deactivation |
 
-== Installation ==
+---
 
-1. Upload the `fatalflow` folder to `/wp-content/plugins/`.
-2. Activate the plugin through the **Plugins** screen.
-3. Go to **Settings → FatalFlow** to set your brand name, color, and message.
+## Technical Highlights
+
+- System-level recovery architecture
+- Early bootstrap interception
+- Automatic MU-plugin deployment
+- Database-independent rendering
+- Clean activation & deactivation flow
+- Minimal runtime overhead
+
+---
+
+## Installation
+
+1. Upload the `fatalflow` folder to `/wp-content/plugins/`
+2. Activate the plugin from the WordPress admin dashboard
+3. Navigate to:
+   `Settings → FatalFlow`
+4. Configure:
+   - Brand name
+   - Accent color
+   - Recovery message
+
+---
+
+## Frequently Asked Questions
+
+### Does FatalFlow slow down my website?
+
+No. FatalFlow only activates its recovery logic during fatal failures. During normal requests, performance impact is negligible.
+
+### Can FatalFlow protect WooCommerce stores?
+
+Yes. FatalFlow is especially useful for WooCommerce and business-critical websites where downtime affects sales and trust.
+
+### Does this replace a backup solution?
+
+No. FatalFlow is designed for graceful failure handling and SEO protection — not backups or disaster recovery.
+
+### Will Google index the maintenance page?
+
+FatalFlow sends proper `503 Service Unavailable` headers with retry instructions, which tells search engines the outage is temporary.
+
+### Does it work if WordPress is completely broken?
+
+Yes. FatalFlow uses MU-plugin and drop-in mechanisms that load before most of WordPress.
+
+---
 
 == Changelog ==
 
-= 1.1.0 =
-* Full rewrite to WP coding standards.
-* All dynamic output escaped with `htmlspecialchars`.
-* Settings page rebuilt using the Settings API with `register_setting` and sanitize callbacks.
-* `deploy_assets()` refactored into discrete, testable methods.
-* `wp-config.php` injection made idempotent; handles non-standard ABSPATH-parent location.
-* db-error.php drop-in only removed on deactivation if our marker is present.
-* UI redesigned: dark glassmorphism with animated progress bar, system font stack typography.
-* Added `LOCK_EX` to all `file_put_contents` calls.
-* Added `wp_delete_file()` instead of bare `@unlink()`.
-* Added `languages/` directory support.
-
-= 1.0.0 =
-* Initial release.
+= 1.0.0 – 2026-05-08 =
+* Initial public release
+* Added fatal PHP error recovery handler
+* Added database failure recovery UI
+* Added SEO-safe 503 maintenance responses
+* Added automatic MU-plugin and db-error deployment
+* Added branded glassmorphism recovery screen

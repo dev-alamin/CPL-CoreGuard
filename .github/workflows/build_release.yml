@@ -53,3 +53,11 @@ jobs:
           files: fatalflow.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Deploy to WordPress.org SVN
+        uses: 10up/action-wordpress-dot-org-deploy@stable
+        env:
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SLUG: fatalflow
+          BUILD_DIR: fatalflow

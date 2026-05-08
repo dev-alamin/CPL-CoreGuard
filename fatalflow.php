@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       FatalFlow
  * Plugin URI:        https://github.com/dev-alamin/fatalflow
- * Description:       The ultimate safety net for professional WordPress websites.
+ * Description:       Protect WordPress sites from fatal errors, database crashes, and SEO damage with an instant recovery maintenance UI.
  * Version:           1.0.0
  * Requires at least: 5.9
  * Requires PHP:      7.4
